@@ -21,31 +21,30 @@ public class AnswerReader {
     public void readAnswer() {
         Object answer = null;
         LinkedList<Serialization> answerList;
-        while (datagramChannel.isOpen()){
+        while (datagramChannel.isOpen()) {
             ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteBuffer.array());
             try {
-                if (datagramChannel.receive(byteBuffer) != null){
+                if (datagramChannel.receive(byteBuffer) != null) {
                     ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
                     answer = objectInputStream.readObject();
                 } else continue;
             } catch (IOException | ClassNotFoundException exception) {
                 continue;
             }
-            if (answer instanceof LinkedList){
+            if (answer instanceof LinkedList) {
                 answerList = (LinkedList) answer;
-                if (answerList.peek() == null){
-                    continue;
-                }
-                if (answerList.peek().getData() instanceof String){
-                    while (!answerList.isEmpty()){
-                        System.out.println((String) answerList.pollFirst().getData());
+                if (answerList.peek() != null) {
+                    if (!answerList.peek().getDataLine().equals("")) {
+                        while (!answerList.isEmpty()) {
+                            System.out.println(answerList.pollFirst().getDataLine());
+                        }
+                        continue;
                     }
-                    continue;
-                }
-                if (answerList.peek().getData() instanceof Worker){
-                    answerList.forEach((object)->workerToUser.workerToConsole((Worker) ((Serialization)object).getData()));
-                    continue;
+                    if (answerList.peek().getDataWorker() != null) {
+                        answerList.forEach((worker) -> workerToUser.workerToConsole(worker.getDataWorker()));
+                        continue;
+                    }
                 }
             }
             answer = null;
