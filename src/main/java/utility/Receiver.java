@@ -5,7 +5,7 @@ import data.Worker;
 import exceptions.IncorrectValueException;
 import exceptions.NullFieldException;
 import request.RequestSender;
-import request.Serialization;
+import request.SerializationFromClient;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -22,7 +22,7 @@ public class Receiver {
     private final WorkerFactory workerFactory = new WorkerFactory(1L);
     private DatagramChannel datagramChannel;
     private SocketAddress socketAddress;
-    private final RequestSender requestSender = new RequestSender(datagramChannel, socketAddress);
+    private final RequestSender requestSender;
     private HashMap<String, CommandInterface> commands;
     private HashSet<String> filePaths = new HashSet<>();
     private Invoker invoker = new Invoker();
@@ -30,17 +30,18 @@ public class Receiver {
     public Receiver(DatagramChannel datagramChannel, SocketAddress socketAddress) {
         this.datagramChannel = datagramChannel;
         this.socketAddress = socketAddress;
+        requestSender = new RequestSender(datagramChannel, socketAddress);
     }
 
 
     public void help(HashMap<String, CommandInterface> commands) {
         this.commands = commands;
-        commands.entrySet().forEach((command) -> System.out.println(command.getKey() + " - " + command.getValue().getDescription()));
+        commands.forEach((key, value) -> System.out.println(key + " - " + value.getDescription()));
     }
 
     public void add() {
         try {
-            requestSender.sendRequest(new Serialization("add", null, workerFactory.getWorkerFromConsole()));
+            requestSender.sendRequest(new SerializationFromClient("add", null, workerFactory.getWorkerFromConsole()));
         } catch (NullFieldException | IncorrectValueException e) {
             System.out.println("Worker can't be created. Please, try again.");
         }
@@ -48,39 +49,39 @@ public class Receiver {
 
     public void addIfMax() {
         try {
-            requestSender.sendRequest(new Serialization("add_if_max", null, workerFactory.getWorkerFromConsole()));
+            requestSender.sendRequest(new SerializationFromClient("add_if_max", null, workerFactory.getWorkerFromConsole()));
         } catch (IncorrectValueException | NullFieldException e) {
             System.out.println("Worker can't be created. Please, try again.");
         }
     }
 
     public void clear() {
-        requestSender.sendRequest(new Serialization("clear", null, null));
+        requestSender.sendRequest(new SerializationFromClient("clear", null, null));
     }
 
     public void countLessThanStartDate(String arg) {
-        requestSender.sendRequest(new Serialization("count_less_than_start_date", arg, null));
+        requestSender.sendRequest(new SerializationFromClient("count_less_than_start_date", arg, null));
     }
 
     public void filterGreaterThanStartDate(String arg) {
-        requestSender.sendRequest(new Serialization("filter_greater_than_start_date", arg, null));
+        requestSender.sendRequest(new SerializationFromClient("filter_greater_than_start_date", arg, null));
     }
 
     public void groupCountingByPosition() {
-        requestSender.sendRequest(new Serialization("group_counting_by_position", null, null));
+        requestSender.sendRequest(new SerializationFromClient("group_counting_by_position", null, null));
     }
 
     public void info() {
-        requestSender.sendRequest(new Serialization("info", null, null));
+        requestSender.sendRequest(new SerializationFromClient("info", null, null));
     }
 
     public void removeById(String arg) {
-        requestSender.sendRequest(new Serialization("remove_by_id", arg, null));
+        requestSender.sendRequest(new SerializationFromClient("remove_by_id", arg, null));
     }
 
     public void removeGreater() {
         try {
-            requestSender.sendRequest(new Serialization("remove_greater", null, workerFactory.getWorkerFromConsole()));
+            requestSender.sendRequest(new SerializationFromClient("remove_greater", null, workerFactory.getWorkerFromConsole()));
         } catch (IncorrectValueException | NullFieldException e) {
             System.out.println("Worker can't be created. Please, try again.");
         }
@@ -88,19 +89,19 @@ public class Receiver {
 
     public void removeLower() {
         try {
-            requestSender.sendRequest(new Serialization("remove_lower", null, workerFactory.getWorkerFromConsole()));
+            requestSender.sendRequest(new SerializationFromClient("remove_lower", null, workerFactory.getWorkerFromConsole()));
         } catch (IncorrectValueException | NullFieldException e) {
             System.out.println("Worker can't be created. Please, try again.");
         }
     }
 
     public void show() {
-        requestSender.sendRequest(new Serialization("show", null, null));
+        requestSender.sendRequest(new SerializationFromClient("show", null, null));
     }
 
     public void update(String arg) {
         try {
-            requestSender.sendRequest(new Serialization("update", arg, workerFactory.getWorkerFromConsole()));
+            requestSender.sendRequest(new SerializationFromClient("update", arg, workerFactory.getWorkerFromConsole()));
         } catch (IncorrectValueException | NullFieldException e) {
             System.out.println("Worker can't be created. Please, try again.");
         }
@@ -135,7 +136,7 @@ public class Receiver {
                         parameters.add(line);
                     }
                     Worker tempWorker = workerFactory.getWorkerFromScript(parameters);
-                    requestSender.sendRequest(new Serialization(command, arg, tempWorker));
+                    requestSender.sendRequest(new SerializationFromClient(command, arg, tempWorker));
                 } else if (command.equals("execute_script")) {
                     if (filePaths.add(arg)) {
                         filePaths.add(arg);

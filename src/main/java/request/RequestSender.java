@@ -30,7 +30,7 @@ public class RequestSender {
         } catch (PortUnreachableException exception){
             System.out.println("Server is not available at the moment. Please, try again later.");
         } catch (IOException exception) {
-            exception.printStackTrace();
+            System.out.println("Client doesn't connect to server. Please, reload program and try again.");
         }
 
     }

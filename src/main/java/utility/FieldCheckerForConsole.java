@@ -10,20 +10,16 @@ import java.util.Scanner;
 
 public class FieldCheckerForConsole {
     private final Scanner scanner;
-    private boolean bool;
 
-    public FieldCheckerForConsole(Scanner scanner, boolean bool) {
+    public FieldCheckerForConsole(Scanner scanner) {
         this.scanner = scanner;
-        this.bool = bool;
     }
 
 
     public <T> T readAndCheckField(String FieldName, String error, FieldCheckerHelp<T> rule) {
         T temp;
         while (true) {
-            if (bool) {
-                System.out.println("Enter worker`s " + FieldName + ":");
-            }
+            System.out.println("Enter worker`s " + FieldName + ":");
             try {
                 Console console = new Console(scanner);
                 temp = rule.check(console.readln());
@@ -105,10 +101,8 @@ public class FieldCheckerForConsole {
     }
 
     public Position readAndCheckPos() {
-        if (bool) {
-            for (Position pos : Position.values()) {
-                System.out.println(pos.toString());
-            }
+        for (Position pos : Position.values()) {
+            System.out.println(pos.toString());
         }
         FieldCheckerHelp<Position> tempInterface = str -> {
             if (str == null) {

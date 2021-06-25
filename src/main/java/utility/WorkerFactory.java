@@ -23,7 +23,6 @@ import java.util.Scanner;
 public class WorkerFactory {
     private Long id;
     private Scanner scanner;
-    private boolean boolWF;
     public Long getId() {
         return id;
     }
@@ -40,9 +39,7 @@ public class WorkerFactory {
     public Scanner getScanner(){
         return scanner;
     }
-    public void setBoolean(boolean bo){
-        boolWF = bo;
-    }
+
 
     /**
      * Creates new worker with new id and creationDate
@@ -114,7 +111,7 @@ public class WorkerFactory {
         Long height;
         Integer weight;
 
-        FieldCheckerForConsole fieldCheckerForConsole = new FieldCheckerForConsole(scanner,boolWF);
+        FieldCheckerForConsole fieldCheckerForConsole = new FieldCheckerForConsole(scanner);
         name = fieldCheckerForConsole.readAndCheckName();
         x = fieldCheckerForConsole.readAndCheckX();
         y = fieldCheckerForConsole.readAndCheckY();

@@ -13,8 +13,6 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args){
-        Scanner scanner = new Scanner(System.in);
-        Console console = new Console(scanner);
         InetAddress serverAddress = null;
         InetAddress clientAddress = null;
         int port = 9898;
@@ -43,17 +41,12 @@ public class Main {
             exception.printStackTrace();
             return;
         }
+        AnswerReader answerReader = new AnswerReader(datagramChannel);
+        Scanner scanner = new Scanner(System.in);
+        Console console = new Console(scanner, answerReader);
         Invoker invoker = new Invoker();
         invoker.initMap(datagramChannel, socketAddress);
-        CommandReader commandReader = new CommandReader(console, invoker);
+        CommandReader commandReader = new CommandReader(console, invoker, answerReader);
         commandReader.activeMode();
-        AnswerReader answerReader = new AnswerReader(datagramChannel);
-        answerReader.readAnswer();
-        try {
-            AnswerReader.stopRead();
-        } catch (IOException exception) {
-            exception.printStackTrace();
         }
-
-    }
 }

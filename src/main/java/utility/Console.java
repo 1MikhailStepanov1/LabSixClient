@@ -11,9 +11,13 @@ import java.util.Scanner;
  */
 public class Console {
     private final Scanner scanner;
-    private static AnswerReader answerReader;
+    private AnswerReader answerReader;
 
-    public Console(Scanner scanner) {
+    public Console(Scanner scanner, AnswerReader answerReader) {
+        this.answerReader = answerReader;
+        this.scanner = scanner;
+    }
+    public Console(Scanner scanner){
         this.scanner = scanner;
     }
 
@@ -31,9 +35,9 @@ public class Console {
             line = scanner.nextLine();
         } catch (NoSuchElementException exception) {
             try {
-                AnswerReader.stopRead();
+                answerReader.stopRead();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Client wasn't connected to the server.");
             }
             System.exit(0);
             line = null;

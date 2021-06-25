@@ -1,5 +1,7 @@
 package utility;
 
+import request.AnswerReader;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,14 +13,16 @@ public class CommandReader {
     private final Invoker invoker;
     private final Pattern commandNamePattern;
     private final Pattern argPattern;
+    private final AnswerReader answerReader;
 
     /**
      * @param console - is used to read commands from console
      * @param invoker - invoker which wil execute received commands
      */
-    public CommandReader(Console console, Invoker invoker) {
+    public CommandReader(Console console, Invoker invoker, AnswerReader answerReader) {
         this.console = console;
         this.invoker = invoker;
+        this.answerReader = answerReader;
             commandNamePattern = Pattern.compile("^\\w+");
             argPattern = Pattern.compile("\\b(.*\\s*)*");
     }
@@ -49,6 +53,7 @@ public class CommandReader {
                 arg = "";
             }
             invoker.exe(command, arg);
+            answerReader.readAnswer();
         } while (!invoker.isStopRequested());
     }
 
