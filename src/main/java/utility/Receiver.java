@@ -2,8 +2,8 @@ package utility;
 
 import command.CommandInterface;
 import data.Worker;
-import exceptions.IncorrectValueException;
-import exceptions.NullFieldException;
+import exceptions.*;
+import request.AnswerReader;
 import request.RequestSender;
 import request.SerializationFromClient;
 
@@ -20,17 +20,20 @@ import java.util.regex.Pattern;
 
 public class Receiver {
     private final WorkerFactory workerFactory = new WorkerFactory(1L);
-    private DatagramChannel datagramChannel;
-    private SocketAddress socketAddress;
+    private final DatagramChannel datagramChannel;
+    private final SocketAddress socketAddress;
     private final RequestSender requestSender;
     private HashMap<String, CommandInterface> commands;
-    private HashSet<String> filePaths = new HashSet<>();
-    private Invoker invoker = new Invoker();
+    private final HashSet<String> filePaths = new HashSet<>();
+    private final Invoker invoker = new Invoker();
+    private final AnswerReader answerReader;
 
-    public Receiver(DatagramChannel datagramChannel, SocketAddress socketAddress) {
+    public Receiver(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console) {
         this.datagramChannel = datagramChannel;
         this.socketAddress = socketAddress;
         requestSender = new RequestSender(datagramChannel, socketAddress);
+        workerFactory.setConsole(console);
+        answerReader = console.getAnswerReader();
     }
 
 
@@ -99,18 +102,27 @@ public class Receiver {
         requestSender.sendRequest(new SerializationFromClient("show", null, null));
     }
 
-    public void update(String arg) {
+    public void update(String arg) throws ValidationException{
+        requestSender.sendRequest(new SerializationFromClient("validate_id", arg, null));
         try {
-            requestSender.sendRequest(new SerializationFromClient("update", arg, workerFactory.getWorkerFromConsole()));
-        } catch (IncorrectValueException | NullFieldException e) {
-            System.out.println("Worker can't be created. Please, try again.");
+            if (answerReader.readValidation()) {
+                try {
+                    requestSender.sendRequest(new SerializationFromClient("update", arg, workerFactory.getWorkerFromConsole()));
+                } catch (IncorrectValueException | NullFieldException e) {
+                    System.out.println("Worker can't be created. Please, try again.");
+                }
+            } else throw new ValidationException();
+        } catch (ServerIsNotAvailableException e) {
+            System.out.println(e.getMessage());
         }
+
     }
 
     public void executeScript(String path) {
         String line;
         String command;
         String arg;
+        AnswerReader answerReader = new AnswerReader(datagramChannel, socketAddress);
         Pattern commandNamePattern = Pattern.compile("^\\w+");
         Pattern argPattern = Pattern.compile("\\b(.*\\s*)*");
         ArrayList<String> parameters = new ArrayList<>();
@@ -143,8 +155,24 @@ public class Receiver {
                     } else {
                         System.out.println("Recursion has been occurred. Please, correct your script.");
                     }
+                } else if (command.equals("help")) {
+                    try {
+                        invoker.exe(command, arg);
+                    } catch (UnknownCommandException | ValidationException exception) {
+                        continue;
+                    } catch (IncorrectArgumentException exception) {
+                        System.out.println(exception.getMessage());
+                        continue;
+                    }
                 } else {
-                    invoker.exe(command, arg);
+                    try {
+                        invoker.exe(command, arg);
+                        answerReader.readAnswer();
+                    } catch (UnknownCommandException | IncorrectArgumentException | ServerIsNotAvailableException exception) {
+                        System.out.println(exception.getMessage());
+                    } catch (ValidationException exception) {
+                        continue;
+                    }
                 }
             }
         } catch (IOException e) {

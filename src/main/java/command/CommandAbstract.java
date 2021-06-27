@@ -1,5 +1,8 @@
 package command;
 
+import exceptions.IncorrectArgumentException;
+import exceptions.ValidationException;
+
 /**
  * Abstract command class contains name and description
  */
@@ -19,7 +22,7 @@ public class CommandAbstract implements CommandInterface {
     }
 
     @Override
-    public void exe(String arg) {
+    public void exe(String arg) throws IncorrectArgumentException, ValidationException {
 
     }
 }

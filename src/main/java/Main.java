@@ -36,16 +36,17 @@ public class Main {
         try {
             datagramChannel = DatagramChannel.open();
             datagramChannel.bind(new InetSocketAddress(clientAddress, 0));
+            datagramChannel.configureBlocking(false);
             System.out.println(datagramChannel.getLocalAddress());
         } catch (IOException exception) {
             exception.printStackTrace();
             return;
         }
-        AnswerReader answerReader = new AnswerReader(datagramChannel);
+        AnswerReader answerReader = new AnswerReader(datagramChannel, socketAddress);
         Scanner scanner = new Scanner(System.in);
         Console console = new Console(scanner, answerReader);
         Invoker invoker = new Invoker();
-        invoker.initMap(datagramChannel, socketAddress);
+        invoker.initMap(datagramChannel, socketAddress, console);
         CommandReader commandReader = new CommandReader(console, invoker, answerReader);
         commandReader.activeMode();
         }

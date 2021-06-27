@@ -20,6 +20,9 @@ public class Console {
     public Console(Scanner scanner){
         this.scanner = scanner;
     }
+    public AnswerReader getAnswerReader(){
+        return answerReader;
+    }
 
     /**
      * Prints toOut.toString() + \n to Console

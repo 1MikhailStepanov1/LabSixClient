@@ -1,6 +1,9 @@
 package utility;
 
 import command.*;
+import exceptions.IncorrectArgumentException;
+import exceptions.UnknownCommandException;
+import exceptions.ValidationException;
 
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
@@ -22,29 +25,33 @@ public class Invoker {
     /**
      * Initialize commands map
      */
-    public void initMap(DatagramChannel datagramChannel, SocketAddress socketAddress) {
-        commands.put("info", new Info(datagramChannel, socketAddress));
-        commands.put("show", new Show(datagramChannel, socketAddress));
-        commands.put("add", new Add(datagramChannel, socketAddress));
-        commands.put("update", new Update(datagramChannel, socketAddress));
-        commands.put("remove_by_id", new RemoveById(datagramChannel, socketAddress));
-        commands.put("clear", new Clear(datagramChannel, socketAddress));
+    public void initMap(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console) {
+        commands.put("info", new Info(datagramChannel, socketAddress, console));
+        commands.put("show", new Show(datagramChannel, socketAddress, console));
+        commands.put("add", new Add(datagramChannel, socketAddress, console));
+        commands.put("update", new Update(datagramChannel, socketAddress, console));
+        commands.put("remove_by_id", new RemoveById(datagramChannel, socketAddress, console));
+        commands.put("clear", new Clear(datagramChannel, socketAddress, console));
         commands.put("exit", new Exit(this));
-        commands.put("add_if_max", new AddIfMax(datagramChannel, socketAddress));
-        commands.put("remove_greater", new RemoveGreater(datagramChannel, socketAddress));
-        commands.put("remove_lower", new RemoveLower(datagramChannel, socketAddress));
-        commands.put("group_counting_by_position", new GroupCountingByPosition(datagramChannel, socketAddress));
-        commands.put("count_less_than_start_date", new CountLessThanStartDate(datagramChannel, socketAddress));
-        commands.put("filter_greater_than_start_date", new FilterGreaterThanStartDate(datagramChannel, socketAddress));
-        commands.put("execute_script", new ExecuteScript(datagramChannel, socketAddress));
-        commands.put("help", new Help(commands, datagramChannel, socketAddress));
+        commands.put("add_if_max", new AddIfMax(datagramChannel, socketAddress, console));
+        commands.put("remove_greater", new RemoveGreater(datagramChannel, socketAddress, console));
+        commands.put("remove_lower", new RemoveLower(datagramChannel, socketAddress, console));
+        commands.put("group_counting_by_position", new GroupCountingByPosition(datagramChannel, socketAddress, console));
+        commands.put("count_less_than_start_date", new CountLessThanStartDate(datagramChannel, socketAddress, console));
+        commands.put("filter_greater_than_start_date", new FilterGreaterThanStartDate(datagramChannel, socketAddress, console));
+        commands.put("execute_script", new ExecuteScript(datagramChannel, socketAddress, console));
+        commands.put("help", new Help(commands, datagramChannel, socketAddress, console));
     }
 
-    public void exe(String name, String arg) {
+    public void exe(String name, String arg) throws UnknownCommandException,IncorrectArgumentException, ValidationException{
         if (commands.containsKey(name)) {
-            commands.get(name).exe(arg);
+            try {
+                commands.get(name).exe(arg);
+            } catch (IncorrectArgumentException e) {
+                throw new IncorrectArgumentException("Incorrect argument.");
+            }
         } else {
-            System.out.println("It is not a command. Please try again.");
+            throw new UnknownCommandException("Unknown command. PLease, try again.");
         }
     }
 

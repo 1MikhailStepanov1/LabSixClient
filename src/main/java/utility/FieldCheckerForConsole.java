@@ -6,13 +6,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 public class FieldCheckerForConsole {
-    private final Scanner scanner;
+    private final Console console;
 
-    public FieldCheckerForConsole(Scanner scanner) {
-        this.scanner = scanner;
+    public FieldCheckerForConsole(Console console) {
+        this.console = console;
     }
 
 
@@ -21,7 +20,6 @@ public class FieldCheckerForConsole {
         while (true) {
             System.out.println("Enter worker`s " + FieldName + ":");
             try {
-                Console console = new Console(scanner);
                 temp = rule.check(console.readln());
             } catch (NumberFormatException exception) {
                 System.out.println("Input is incorrect. Please, try again." + error);

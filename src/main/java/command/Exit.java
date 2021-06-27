@@ -1,5 +1,6 @@
 package command;
 
+import exceptions.IncorrectArgumentException;
 import utility.Invoker;
 
 public class Exit extends CommandAbstract {
@@ -12,10 +13,9 @@ public class Exit extends CommandAbstract {
     }
 
     @Override
-    public void exe(String arg){
+    public void exe(String arg) throws IncorrectArgumentException{
         if (arg.length() > 0){
-            System.out.println("This command doesn't require argument. Please, try again.");
-            return;
+            throw new IncorrectArgumentException("Command doesn't need argument");
         }else {
             invoker.requestExit(this);
         }

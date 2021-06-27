@@ -1,5 +1,9 @@
 package utility;
 
+import exceptions.IncorrectArgumentException;
+import exceptions.ServerIsNotAvailableException;
+import exceptions.UnknownCommandException;
+import exceptions.ValidationException;
 import request.AnswerReader;
 
 import java.util.regex.Matcher;
@@ -23,8 +27,8 @@ public class CommandReader {
         this.console = console;
         this.invoker = invoker;
         this.answerReader = answerReader;
-            commandNamePattern = Pattern.compile("^\\w+");
-            argPattern = Pattern.compile("\\b(.*\\s*)*");
+        commandNamePattern = Pattern.compile("^\\w+");
+        argPattern = Pattern.compile("\\b(.*\\s*)*");
     }
 
     /**
@@ -38,22 +42,43 @@ public class CommandReader {
         String arg;
         do {
             line = console.readln();
-            Matcher matcher = commandNamePattern.matcher(line);
-            if (matcher.find()){
-                command = matcher.group();
-            }else{
-                System.out.println("Input is not a command.");
-                continue;
-            }
-            line = line.substring(command.length());
-            matcher = argPattern.matcher(line);
-            if (matcher.find()){
-                arg = matcher.group();
+            if (line != null) {
+                Matcher matcher = commandNamePattern.matcher(line);
+                if (matcher.find()) {
+                    command = matcher.group();
+                } else {
+                    System.out.println("Input is not a command.");
+                    continue;
+                }
+                line = line.substring(command.length());
+                matcher = argPattern.matcher(line);
+                if (matcher.find()) {
+                    arg = matcher.group();
+                } else {
+                    arg = "";
+                }
+                if (command.equals("help")) {
+                    try {
+                        invoker.exe(command, arg);
+                    } catch (UnknownCommandException | ValidationException exception) {
+                        continue;
+                    } catch (IncorrectArgumentException exception) {
+                        System.out.println(exception.getMessage());
+                        continue;
+                    }
+                } else {
+                    try {
+                        invoker.exe(command, arg);
+                        answerReader.readAnswer();
+                    } catch (UnknownCommandException | IncorrectArgumentException | ServerIsNotAvailableException exception) {
+                        System.out.println(exception.getMessage());
+                    } catch (ValidationException exception){
+                        continue;
+                    }
+                }
             } else {
-                arg = "";
+                System.out.println("Input is not a command.");
             }
-            invoker.exe(command, arg);
-            answerReader.readAnswer();
         } while (!invoker.isStopRequested());
     }
 

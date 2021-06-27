@@ -1,5 +1,7 @@
 package command;
 
+import exceptions.IncorrectArgumentException;
+import utility.Console;
 import utility.Receiver;
 
 import java.net.SocketAddress;
@@ -7,16 +9,16 @@ import java.nio.channels.DatagramChannel;
 
 public class ExecuteScript extends CommandAbstract {
     private final Receiver receiver;
-    public ExecuteScript(DatagramChannel datagramChannel, SocketAddress socketAddress) {
+    public ExecuteScript(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console) {
         super("Read and execute script from entered file.");
-        this.receiver = new Receiver(datagramChannel, socketAddress);
+        this.receiver = new Receiver(datagramChannel, socketAddress, console);
     }
     @Override
-    public void exe(String arg){
-        if (arg.length() > 0){
-            receiver.executeScript(arg);
+    public void exe(String arg) throws IncorrectArgumentException{
+        if (arg.length() == 0){
+            throw new IncorrectArgumentException("Command doesn't need argument");
         } else {
-            System.out.println("Input is incorrect. Please, try again.");
+            receiver.executeScript(arg);
         }
     }
 }

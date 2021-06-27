@@ -22,7 +22,7 @@ import java.util.Scanner;
  */
 public class WorkerFactory {
     private Long id;
-    private Scanner scanner;
+    private Console console;
     public Long getId() {
         return id;
     }
@@ -33,13 +33,13 @@ public class WorkerFactory {
     public WorkerFactory(Long startId) {
         this.id = startId;
     }
-    public void setScanner(Scanner scanner){
-        this.scanner = scanner;
-    }
-    public Scanner getScanner(){
-        return scanner;
-    }
 
+    public void setConsole(Console console) {
+        this.console = console;
+    }
+     public Console getConsole(){
+        return console;
+     }
 
     /**
      * Creates new worker with new id and creationDate
@@ -111,7 +111,7 @@ public class WorkerFactory {
         Long height;
         Integer weight;
 
-        FieldCheckerForConsole fieldCheckerForConsole = new FieldCheckerForConsole(scanner);
+        FieldCheckerForConsole fieldCheckerForConsole = new FieldCheckerForConsole(console);
         name = fieldCheckerForConsole.readAndCheckName();
         x = fieldCheckerForConsole.readAndCheckX();
         y = fieldCheckerForConsole.readAndCheckY();
