@@ -1,6 +1,8 @@
 package utility;
 
 import data.Position;
+import exceptions.IncorrectValueException;
+import exceptions.NullFieldException;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,16 +18,13 @@ public class FieldCheckerForConsole {
 
 
     public <T> T readAndCheckField(String FieldName, String error, FieldCheckerHelp<T> rule) {
-        T temp;
+        T temp = null;
         while (true) {
             System.out.println("Enter worker`s " + FieldName + ":");
             try {
                 temp = rule.check(console.readln());
             } catch (NumberFormatException exception) {
                 System.out.println("Input is incorrect. Please, try again." + error);
-                continue;
-            } catch (NullPointerException exception) {
-                System.out.println("Value of this field can`t be null. Please try again.");
                 continue;
             } catch (DateTimeParseException exception) {
                 System.out.println("Format of input is incorrect. Use dd.mm.yyyy hh:mm:ss +/-hh:mm");
@@ -35,6 +34,8 @@ public class FieldCheckerForConsole {
                 continue;
             } catch (NoSuchElementException exception) {
                 continue;
+            } catch (IncorrectValueException | NullFieldException e) {
+                System.out.println(e.getMessage());
             }
             return temp;
         }

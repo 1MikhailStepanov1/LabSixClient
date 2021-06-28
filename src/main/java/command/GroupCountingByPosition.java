@@ -2,6 +2,7 @@ package command;
 
 import exceptions.IncorrectArgumentException;
 import utility.Console;
+import utility.Invoker;
 import utility.Receiver;
 
 import java.net.SocketAddress;
@@ -10,9 +11,9 @@ import java.nio.channels.DatagramChannel;
 public class GroupCountingByPosition extends CommandAbstract {
     private final Receiver receiver;
 
-    public GroupCountingByPosition(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console) {
+    public GroupCountingByPosition(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console, Invoker invoker) {
         super("Group elements by field \"Position\" and show amount of elements in each group");
-        this.receiver = new Receiver(datagramChannel, socketAddress, console);
+        this.receiver = new Receiver(datagramChannel, socketAddress, console, invoker);
     }
 
     @Override

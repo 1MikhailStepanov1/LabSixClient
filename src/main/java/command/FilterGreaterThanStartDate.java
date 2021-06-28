@@ -2,6 +2,7 @@ package command;
 
 import exceptions.IncorrectArgumentException;
 import utility.Console;
+import utility.Invoker;
 import utility.Receiver;
 
 import java.net.SocketAddress;
@@ -13,9 +14,9 @@ import java.time.format.DateTimeParseException;
 public class FilterGreaterThanStartDate extends CommandAbstract {
     private final Receiver receiver;
 
-    public FilterGreaterThanStartDate(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console) {
+    public FilterGreaterThanStartDate(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console, Invoker invoker) {
         super("Show elements with value of field \"StartDate\", which is bigger than indicated one");
-        this.receiver = new Receiver(datagramChannel, socketAddress, console);
+        this.receiver = new Receiver(datagramChannel, socketAddress, console, invoker);
     }
 
     @Override

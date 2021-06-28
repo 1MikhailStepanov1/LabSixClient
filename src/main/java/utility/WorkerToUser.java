@@ -18,7 +18,7 @@ public class WorkerToUser {
         System.out.println("Worker");
         System.out.println("Id: " + worker.getId());
         System.out.println("Name: " + worker.getName());
-        System.out.println("Coordinates: X-" + worker.getCoordinates().getX() + " Y-" + worker.getCoordinates().getY());
+        System.out.println("Coordinates: X-" + worker.getCoordinates().getCoordinateX() + " Y-" + worker.getCoordinates().getCoordinateY());
         System.out.println("Creation Date: " + worker.getCreationDate().format(formatter));
         System.out.println("Salary: " + worker.getSalary());
         System.out.println("Start Date: " + worker.getStartDate().format(formatter));

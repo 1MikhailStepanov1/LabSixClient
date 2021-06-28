@@ -46,7 +46,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         Console console = new Console(scanner, answerReader);
         Invoker invoker = new Invoker();
-        invoker.initMap(datagramChannel, socketAddress, console);
+        invoker.initMap(datagramChannel, socketAddress, console, invoker);
         CommandReader commandReader = new CommandReader(console, invoker, answerReader);
         commandReader.activeMode();
         }

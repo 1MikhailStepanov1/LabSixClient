@@ -16,6 +16,7 @@ public class AnswerReader {
     private final DatagramChannel datagramChannel;
     private final SocketAddress socketAddress;
 
+
     public AnswerReader(DatagramChannel datagramChannel, SocketAddress socketAddress) {
         this.datagramChannel = datagramChannel;
         this.socketAddress = socketAddress;
@@ -23,27 +24,26 @@ public class AnswerReader {
 
     public void readAnswer() throws ServerIsNotAvailableException {
         long time = System.currentTimeMillis() - 1;
-        System.out.println(time);
+        Object answer;
+        ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteBuffer.array());
         while (true) {
-            System.out.println(System.currentTimeMillis());
-            if ((time < System.currentTimeMillis() && (System.currentTimeMillis() - time) < 100)) {
-                Object answer = new Object();
-                ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
-                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteBuffer.array());
+            if ((time < System.currentTimeMillis() && (System.currentTimeMillis() - time) < 5000)) {
                 try {
-//                    if (datagramChannel.receive(byteBuffer) != null) {
                     datagramChannel.receive(byteBuffer);
-                    ((Buffer)byteBuffer).flip();
-                    ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-                    answer = objectInputStream.readObject();
-//                    } else throw new ServerIsNotAvailableException("Server is not available at the moment.");
+                    if (byteBuffer.position() != 0) {
+                        ((Buffer) byteBuffer).flip();
+                        ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+                        answer = objectInputStream.readObject();
+                    } else continue;
                 } catch (IOException | ClassNotFoundException exception) {
                     System.out.println("Object can't be read from buffer.");
                     exception.printStackTrace();
+                    return;
                 }
                 SerializationForClient answerChanged = (SerializationForClient) answer;
                 if (answerChanged.getStatus()) {
-                    System.out.println("Command was done successfully.");
+                    System.out.println("Command was done successfully.\n");
                     if (!answerChanged.getMessage().equals("")) {
                         System.out.println(answerChanged.getMessage());
                     }
@@ -59,7 +59,7 @@ public class AnswerReader {
                         System.out.println(answerChanged.getMessage());
                     }
                 }
-                ((Buffer)byteBuffer).clear();
+                ((Buffer) byteBuffer).clear();
                 break;
             } else {
                 throw new ServerIsNotAvailableException("Server is not available at the moment.");
@@ -69,9 +69,8 @@ public class AnswerReader {
 
     public boolean readValidation() throws ServerIsNotAvailableException {
         long time = System.currentTimeMillis();
-        System.out.println(time);
         while (true) {
-            if (time < System.currentTimeMillis() && (System.currentTimeMillis() - time) < 50000) {
+            if (time < System.currentTimeMillis() && (System.currentTimeMillis() - time) < 5000) {
                 Object answer = new Object();
                 ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteBuffer.array());
@@ -87,11 +86,11 @@ public class AnswerReader {
                 SerializationForClient answerChanged = null;
                 answerChanged = (SerializationForClient) answer;
                 if (answerChanged.getStatus()) {
-                    byteBuffer.clear();
+                    ((Buffer)byteBuffer).clear();
                     System.out.println("Validation was passed good.");
                     return true;
                 } else {
-                    byteBuffer.clear();
+                    ((Buffer)byteBuffer).clear();
                     System.out.println("Validation wasn't passed.");
                     return false;
                 }
@@ -105,4 +104,6 @@ public class AnswerReader {
         datagramChannel.disconnect();
         datagramChannel.close();
     }
+
+
 }

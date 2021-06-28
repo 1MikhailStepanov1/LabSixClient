@@ -2,6 +2,7 @@ package command;
 
 import exceptions.IncorrectArgumentException;
 import utility.Console;
+import utility.Invoker;
 import utility.Receiver;
 
 import java.net.SocketAddress;
@@ -13,9 +14,9 @@ import java.time.format.DateTimeParseException;
 public class CountLessThanStartDate extends CommandAbstract {
     private final Receiver receiver;
 
-    public CountLessThanStartDate(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console) {
+    public CountLessThanStartDate(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console, Invoker invoker) {
         super("Show amount of elements with field \"StartDate\" which is lower than indicated one");
-        this.receiver = new Receiver(datagramChannel, socketAddress, console);
+        this.receiver = new Receiver(datagramChannel, socketAddress, console, invoker);
     }
 
     @Override

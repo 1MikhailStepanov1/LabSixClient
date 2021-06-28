@@ -2,6 +2,7 @@ package command;
 
 import exceptions.IncorrectArgumentException;
 import utility.Console;
+import utility.Invoker;
 import utility.Receiver;
 
 import java.net.SocketAddress;
@@ -9,9 +10,9 @@ import java.nio.channels.DatagramChannel;
 
 public class AddIfMax extends CommandAbstract{
     private final Receiver receiver;
-    public AddIfMax(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console){
+    public AddIfMax(DatagramChannel datagramChannel, SocketAddress socketAddress, Console console, Invoker invoker){
         super("Add new element to the collection, if new element`s value is bigger than element`s maximum in collection");
-        this.receiver = new Receiver(datagramChannel, socketAddress, console);
+        this.receiver = new Receiver(datagramChannel, socketAddress, console, invoker);
     }
 
     @Override
