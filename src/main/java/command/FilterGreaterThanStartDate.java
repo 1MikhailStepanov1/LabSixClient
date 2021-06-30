@@ -29,8 +29,7 @@ public class FilterGreaterThanStartDate extends CommandAbstract {
             try {
                 tempTime = ZonedDateTime.parse(arg, formatter);
             } catch (DateTimeParseException exception) {
-                System.out.println(exception.getMessage());
-                throw new IncorrectArgumentException("Incorrect argument.");
+                throw new IncorrectArgumentException("Incorrect argument. Follow format dd.mm.yyyy hh:mm:ss +/-hh:mm");
             }
             receiver.filterGreaterThanStartDate(arg);
         }

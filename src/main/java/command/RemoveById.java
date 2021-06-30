@@ -23,9 +23,11 @@ public class RemoveById extends CommandAbstract {
         }else {
             try {
                 Long tempId = Long.parseLong(arg);
+                if (tempId <=0){
+                    throw new NumberFormatException();
+                }
             } catch (NumberFormatException exception) {
-                System.out.println(exception.getMessage());
-                throw new IncorrectArgumentException("Incorrect argument.");
+                throw new IncorrectArgumentException("Incorrect argument. Id can't be less than 0.");
             }
             receiver.removeById(arg);
         }

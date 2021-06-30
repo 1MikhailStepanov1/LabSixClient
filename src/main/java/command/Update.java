@@ -24,8 +24,11 @@ public class Update extends CommandAbstract {
         } else {
             try {
                 Integer tempInt = Integer.parseInt(arg);
+                if (tempInt <= 0){
+                    throw new NumberFormatException();
+                }
             } catch (NumberFormatException exception){
-                throw new IncorrectArgumentException("Incorrect format of id.");
+                throw new IncorrectArgumentException("Incorrect format of id. (Should be more than 0.)");
             }
             receiver.update(arg);
         }

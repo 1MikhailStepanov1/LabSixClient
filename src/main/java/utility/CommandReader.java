@@ -42,7 +42,7 @@ public class CommandReader {
         String arg;
         do {
             line = console.readln();
-            if (line != null) {
+            if (line != null ) {
                 Matcher matcher = commandNamePattern.matcher(line);
                 if (matcher.find()) {
                     command = matcher.group();
@@ -53,11 +53,11 @@ public class CommandReader {
                 line = line.substring(command.length());
                 matcher = argPattern.matcher(line);
                 if (matcher.find()) {
-                    arg = matcher.group();
+                    arg = line.trim();
                 } else {
                     arg = "";
                 }
-                if (command.equals("help")) {
+                if (command.equals("help") || command.equals("execute_script")) {
                     try {
                         invoker.exe(command, arg);
                     } catch (UnknownCommandException | ValidationException exception) {

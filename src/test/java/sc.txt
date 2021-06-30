@@ -1,12 +1,4 @@
-show
-add
-Goga
-555
-555
-1561
-12.12.1212 12:12:12 +03:00
+info
+execute_script D:\Java_projects\Lab6Client\src\test\java\sc1
+help
 
-
-
-12
-show

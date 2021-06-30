@@ -5,8 +5,11 @@ import exceptions.IncorrectArgumentException;
 import exceptions.UnknownCommandException;
 import exceptions.ValidationException;
 
+import java.io.BufferedReader;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -19,9 +22,11 @@ public class Invoker {
     private boolean isStopRequested = false;
     private final Object allowedToStop = Exit.class;
     private HashSet<String> filePaths = new HashSet<>();
+    private Deque<BufferedReader> readers = new ArrayDeque<>();
 
     public Invoker() {
         commands = new HashMap<>();
+        filePaths.clear();
     }
 
     /**
@@ -47,13 +52,9 @@ public class Invoker {
 
     public void exe(String name, String arg) throws UnknownCommandException,IncorrectArgumentException, ValidationException{
         if (commands.containsKey(name)) {
-            try {
-                commands.get(name).exe(arg);
-            } catch (IncorrectArgumentException e) {
-                throw new IncorrectArgumentException("Incorrect argument.");
-            }
+            commands.get(name).exe(arg);
         } else {
-            throw new UnknownCommandException("Unknown command. PLease, try again.");
+            throw new UnknownCommandException("Unknown command. Please, try again.");
         }
     }
 
@@ -82,5 +83,24 @@ public class Invoker {
     }
     public void addPath(String path){
         filePaths.add(path);
+    }
+    public void deletePath(String path){
+        filePaths.remove(path);
+    }
+
+    public void addBufferedReader(BufferedReader bufferedReader) {
+        readers.push(bufferedReader);
+    }
+
+    public BufferedReader getBufferedReader() {
+        return readers.pop();
+    }
+
+    public String writeBuffers(){
+        return readers.toString();
+    }
+
+    public Deque<BufferedReader> getReaders(){
+        return readers;
     }
 }

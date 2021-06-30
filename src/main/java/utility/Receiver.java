@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -125,54 +124,87 @@ public class Receiver {
         Pattern argPattern = Pattern.compile("\\b(.*\\s*)*");
         String[] parameters = new String[9];
         Worker tempWorker;
-        if (invoker.getFilePaths().contains(path)) {
-            System.out.println("Recursion has occurred. Please, correct your script.");
-            return;
-        }
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(path))) {
+        answerReader.setAnswerAccepted(true);
+//        System.out.println(invoker.getFilePaths().toString());
+        invoker.addPath(path);
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(path));
             while (true) {
-                line = bufferedReader.readLine();
-                if (line == null) {
-                    System.out.println("Command \"execute_script\" has finished.");
-                    break;
-                } else {
-                    Matcher matcher = commandNamePattern.matcher(line);
-                    if (matcher.find()) {
-                        command = matcher.group();
-                    } else {
-                        System.out.println("Input is not a command.");
-                    }
-                    line = line.substring(command.length());
-                    matcher = argPattern.matcher(line);
-                    if (matcher.find()) {
-                        arg = matcher.group();
-                    } else {
-                        arg = "";
-                    }
-                    if (command.equals("add") || command.equals("update") || command.equals("remove_lower") || command.equals("remove_greater") || command.equals("add_if_max")) {
-                        for (int i = 0; i < 9; i++) {
-                            line = bufferedReader.readLine();
-                            parameters[i] = line;
+                if (answerReader.isAnswerAccepted()) {
+                    answerReader.setAnswerAccepted(false);
+                    line = bufferedReader.readLine();
+                    if (line == null || line.equals("")) {
+                        System.out.println("Command \"execute_script\" has finished.");
+                        invoker.deletePath(path);
+                        if (!invoker.getReaders().isEmpty()) {
+                            invoker.getBufferedReader();
                         }
-                        tempWorker = workerFactory.getWorkerFromScript(parameters);
-                        if (tempWorker == null) {
-                            System.out.println("Worker haven't passed validation. Command " + command + " won't be execute.");
+                        break;
+                    } else {
+                        Matcher matcher = commandNamePattern.matcher(line);
+                        if (matcher.find()) {
+                            command = matcher.group();
+                        } else {
+                            System.out.println("Input is not a command.");
+                            answerReader.setAnswerAccepted(true);
                             continue;
                         }
-                        requestSender.sendRequest(new SerializationFromClient(command, arg, tempWorker));
-                    } else {
-                        try {
-                            invoker.exe(command, arg);
-                        } catch (UnknownCommandException | IncorrectArgumentException | ValidationException exception) {
-                            exception.printStackTrace();
+                        line = line.substring(command.length());
+                        matcher = argPattern.matcher(line);
+                        if (matcher.find()) {
+                            arg = line.trim();
+                        } else {
+                            arg = "";
+                        }
+                        if (command.equals("execute_script")){
+                            invoker.addBufferedReader(bufferedReader);
+                        }
+                        if (invoker.getFilePaths().contains(arg)) {
+                            System.out.println("Recursion has occurred. Please, correct your script.");
+                            invoker.deletePath(path);
+                            answerReader.setAnswerAccepted(true);
+                            continue;
+                        }
+                        if (command.equals("add") || command.equals("update") || command.equals("remove_lower") || command.equals("remove_greater") || command.equals("add_if_max")) {
+                            for (int i = 0; i < 9; i++) {
+                                line = bufferedReader.readLine();
+                                parameters[i] = line;
+                            }
+                            tempWorker = workerFactory.getWorkerFromScript(parameters);
+                            if (tempWorker == null) {
+                                System.out.println("Worker haven't passed validation. Command " + command + " won't be execute.");
+                                answerReader.setAnswerAccepted(true);
+                                continue;
+                            }
+                            requestSender.sendRequest(new SerializationFromClient(command, arg, tempWorker));
+                        } else {
+                            try {
+                                invoker.exe(command, arg);
+                            } catch (UnknownCommandException | IncorrectArgumentException | ValidationException exception) {
+                                System.out.print(exception.getMessage() + "\n");
+                                answerReader.setAnswerAccepted(true);
+                                continue;
+                            }
+                            if (command.equals("execute_script")){
+                                bufferedReader = invoker.getBufferedReader();
+                                answerReader.setAnswerAccepted(true);
+                            }
+                        }
+                        if (!command.equals("execute_script") && !command.equals("help")) {
+                            try {
+                                answerReader.readAnswer();
+                            } catch (ServerIsNotAvailableException e) {
+                                System.out.println(e.getMessage());
+                            }
                         }
                     }
-                }
+                } else continue;
             }
+            bufferedReader.close();
+            invoker.getFilePaths().clear();
         } catch (IOException e) {
-            System.out.println("File can't be ran.");
+            System.out.println("File can't be ran by client. (Check file's rights.)");
         }
-
     }
 }
 

@@ -151,35 +151,51 @@ public class WorkerFactory {
         }
         try {
             x = fieldCheckerForScript.readAndCheckX(parameters[1]);
-        } catch (IncorrectValueException | NullFieldException | NumberFormatException e) {
+        } catch (IncorrectValueException | NullFieldException  e) {
             System.out.println(e.getMessage());
+            return null;
+        }catch (NumberFormatException e){
+            System.out.println("Coordinate X can't be parsed.");
             return null;
         }
         try {
             y = fieldCheckerForScript.readAndCheckY(parameters[2]);
-        } catch (IncorrectValueException | NullFieldException | NumberFormatException e) {
+        } catch (IncorrectValueException | NullFieldException  e) {
             System.out.println(e.getMessage());
+            return null;
+        }catch (NumberFormatException e){
+            System.out.println("Coordinate Y can't be parsed.");
             return null;
         }
         try {
             salary = fieldCheckerForScript.readAndCheckSalary(parameters[3]);
-        } catch (IncorrectValueException | NullFieldException | NumberFormatException e) {
+        } catch (IncorrectValueException | NullFieldException e) {
             System.out.println(e.getMessage());
+            return null;
+        }catch (NumberFormatException e){
+            System.out.println("Salary can't be parsed.");
             return null;
         }
         try {
             startDate = fieldCheckerForScript.readAndCheckStartDate(parameters[4]);
-        } catch (IncorrectValueException | NullFieldException | DateTimeParseException e) {
+        } catch (IncorrectValueException | NullFieldException  e) {
             System.out.println(e.getMessage());
+            return null;
+        }catch (DateTimeParseException e){
+            System.out.println("Start date can't be parsed.");
             return null;
         }
         try {
             endDate = fieldCheckerForScript.readAndCheckEndDate(parameters[5]);
         }
-        catch (IncorrectValueException | NullFieldException | DateTimeParseException e) {
+        catch (IncorrectValueException | NullFieldException  e) {
             System.out.println(e.getMessage());
             return null;
+        }catch (DateTimeParseException e){
+            System.out.println("End date can't be parsed.");
+            return null;
         }
+
         try {
             position = fieldCheckerForScript.readAndCheckPos(parameters[6]);
         } catch (IncorrectValueException | NullFieldException e) {
@@ -188,14 +204,20 @@ public class WorkerFactory {
         }
         try {
             height = fieldCheckerForScript.readAndCheckHeight(parameters[7]);
-        } catch (IncorrectValueException | NullFieldException | NumberFormatException e) {
+        } catch (IncorrectValueException | NullFieldException  e) {
             System.out.println(e.getMessage());
+            return null;
+        }catch (NumberFormatException e){
+            System.out.println("Height can't be parsed.");
             return null;
         }
         try {
             weight = fieldCheckerForScript.readAndCheckWeight(parameters[8]);
-        } catch (IncorrectValueException | NullFieldException | NumberFormatException e) {
+        } catch (IncorrectValueException | NullFieldException e) {
             System.out.println(e.getMessage());
+            return null;
+        }catch (NumberFormatException e){
+            System.out.println("Weight can't be parsed.");
             return null;
         }
         try {
