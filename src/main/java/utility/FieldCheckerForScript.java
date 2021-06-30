@@ -61,9 +61,14 @@ public class FieldCheckerForScript {
 
     public Double readAndCheckSalary(String salary) throws NumberFormatException, IncorrectValueException, NullFieldException {
         FieldCheckerHelp<Double> tempInterface = str -> {
-            double result = Double.parseDouble(str);
-            if (result <= 0) {
-                throw new IncorrectValueException("salary", "(Reminder: Salary should be more than 0.)");
+            Double result;
+            if (str != null) {
+                result = Double.parseDouble(str);
+                if (result <= 0) {
+                    throw new IncorrectValueException("salary", "(Reminder: Salary should be more than 0.)");
+                }
+            }else {
+                throw new NullFieldException("salary");
             }
             return result;
         };

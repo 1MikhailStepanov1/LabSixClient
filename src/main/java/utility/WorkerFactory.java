@@ -107,26 +107,40 @@ public class WorkerFactory {
      * @throws IncorrectValueException - if value of the field contains wrong data, which is not allowed in this field
      */
     public Worker getWorkerFromConsole() throws IncorrectValueException, NullFieldException {
-        String name;
-        Long x;
-        Integer y;
-        Double salary;
-        ZonedDateTime startDate;
+        String name = null;
+        Long x = null;
+        Integer y = null;
+        Double salary = null;
+        ZonedDateTime startDate = null;
         ZonedDateTime endDate;
         Position position;
-        Long height;
-        Integer weight;
+        Long height = null;
+        Integer weight = null;
 
         FieldCheckerForConsole fieldCheckerForConsole = new FieldCheckerForConsole(console);
-        name = fieldCheckerForConsole.readAndCheckName();
-        x = fieldCheckerForConsole.readAndCheckX();
-        y = fieldCheckerForConsole.readAndCheckY();
-        salary = fieldCheckerForConsole.readAndCheckSalary();
-        startDate = fieldCheckerForConsole.readAndCheckStartDate();
+        while (name == null) {
+            name = fieldCheckerForConsole.readAndCheckName();
+        }
+        while (x == null) {
+            x = fieldCheckerForConsole.readAndCheckX();
+        }
+        while (y == null) {
+            y = fieldCheckerForConsole.readAndCheckY();
+        }
+        while (salary == null) {
+            salary = fieldCheckerForConsole.readAndCheckSalary();
+        }
+        while (startDate == null) {
+            startDate = fieldCheckerForConsole.readAndCheckStartDate();
+        }
         endDate = fieldCheckerForConsole.readAndCheckEndDate();
         position = fieldCheckerForConsole.readAndCheckPos();
-        height = fieldCheckerForConsole.readAndCheckHeight();
-        weight = fieldCheckerForConsole.readAndCheckWeight();
+        while (height == null) {
+            height = fieldCheckerForConsole.readAndCheckHeight();
+        }
+        while (weight == null) {
+            weight = fieldCheckerForConsole.readAndCheckWeight();
+        }
 
         return createWorker(name, new Coordinates(x, y), salary, startDate, endDate, position, new Person(height, weight));
     }
@@ -151,19 +165,19 @@ public class WorkerFactory {
         }
         try {
             x = fieldCheckerForScript.readAndCheckX(parameters[1]);
-        } catch (IncorrectValueException | NullFieldException  e) {
+        } catch (IncorrectValueException | NullFieldException e) {
             System.out.println(e.getMessage());
             return null;
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Coordinate X can't be parsed.");
             return null;
         }
         try {
             y = fieldCheckerForScript.readAndCheckY(parameters[2]);
-        } catch (IncorrectValueException | NullFieldException  e) {
+        } catch (IncorrectValueException | NullFieldException e) {
             System.out.println(e.getMessage());
             return null;
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Coordinate Y can't be parsed.");
             return null;
         }
@@ -172,26 +186,25 @@ public class WorkerFactory {
         } catch (IncorrectValueException | NullFieldException e) {
             System.out.println(e.getMessage());
             return null;
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Salary can't be parsed.");
             return null;
         }
         try {
             startDate = fieldCheckerForScript.readAndCheckStartDate(parameters[4]);
-        } catch (IncorrectValueException | NullFieldException  e) {
+        } catch (IncorrectValueException | NullFieldException e) {
             System.out.println(e.getMessage());
             return null;
-        }catch (DateTimeParseException e){
+        } catch (DateTimeParseException e) {
             System.out.println("Start date can't be parsed.");
             return null;
         }
         try {
             endDate = fieldCheckerForScript.readAndCheckEndDate(parameters[5]);
-        }
-        catch (IncorrectValueException | NullFieldException  e) {
+        } catch (IncorrectValueException | NullFieldException e) {
             System.out.println(e.getMessage());
             return null;
-        }catch (DateTimeParseException e){
+        } catch (DateTimeParseException e) {
             System.out.println("End date can't be parsed.");
             return null;
         }
@@ -204,10 +217,10 @@ public class WorkerFactory {
         }
         try {
             height = fieldCheckerForScript.readAndCheckHeight(parameters[7]);
-        } catch (IncorrectValueException | NullFieldException  e) {
+        } catch (IncorrectValueException | NullFieldException e) {
             System.out.println(e.getMessage());
             return null;
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Height can't be parsed.");
             return null;
         }
@@ -216,12 +229,12 @@ public class WorkerFactory {
         } catch (IncorrectValueException | NullFieldException e) {
             System.out.println(e.getMessage());
             return null;
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             System.out.println("Weight can't be parsed.");
             return null;
         }
         try {
-             tempWorker = createWorker(name, new Coordinates(x, y), salary, startDate, endDate, position, new Person(height, weight));
+            tempWorker = createWorker(name, new Coordinates(x, y), salary, startDate, endDate, position, new Person(height, weight));
         } catch (NullFieldException | IncorrectValueException e) {
             System.out.println(e.getMessage());
         }

@@ -42,37 +42,51 @@ public class FieldCheckerForConsole {
     }
 
 
-    public String readAndCheckName() throws NumberFormatException {
+    public String readAndCheckName() {
         FieldCheckerHelp<String> tempInterface = str -> {
             if (str == null || str.equals("")) {
-                throw new NumberFormatException();
+                throw new NullFieldException("name");
             }
             return str;
         };
         return readAndCheckField("name", "", tempInterface);
     }
 
-    public Long readAndCheckX() throws NumberFormatException {
+    public Long readAndCheckX() {
         FieldCheckerHelp<Long> tempInterface = str -> {
-            long result = Long.parseLong(str);
-            if (result > 768) {
-                throw new NumberFormatException();
-            }
+            Long result = null;
+            if (str != null) {
+                result = Long.parseLong(str);
+                if (result > 768) {
+                    throw new IncorrectValueException("coordinate X", "(Reminder: Coordinate X can't be more than 768.)");
+                }
+            }else throw new NullFieldException("coordinate X");
             return result;
         };
         return readAndCheckField("coordinate X", "(Reminder: Coordinate X can't be more than 768.)", tempInterface);
     }
 
     public Integer readAndCheckY() {
-        FieldCheckerHelp<Integer> tempInterface = Integer::parseInt;
+        FieldCheckerHelp<Integer> tempInterface = str -> {
+            Integer result = null;
+            if (str != null) {
+                result = Integer.parseInt(str);
+            } else throw new NullFieldException("coordinate Y");
+            return result;
+        };
         return readAndCheckField("coordinate Y", "", tempInterface);
     }
 
-    public Double readAndCheckSalary() throws NumberFormatException {
+    public Double readAndCheckSalary() {
         FieldCheckerHelp<Double> tempInterface = str -> {
-            double result = Double.parseDouble(str);
-            if (result <= 0) {
-                throw new NumberFormatException();
+            Double result;
+            if (str != null) {
+                result = Double.parseDouble(str);
+                if (result <= 0) {
+                    throw new IncorrectValueException("salary", "(Reminder: Salary should be more than 0.)");
+                }
+            }else {
+                throw new NullFieldException("salary");
             }
             return result;
         };
@@ -81,8 +95,12 @@ public class FieldCheckerForConsole {
 
     public ZonedDateTime readAndCheckStartDate() {
         FieldCheckerHelp<ZonedDateTime> tempInterface = str -> {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.uuuu H:mm:ss z");
-            return ZonedDateTime.parse(str, formatter);
+            ZonedDateTime result = null;
+            if (str != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.uuuu H:mm:ss z");
+                result = ZonedDateTime.parse(str, formatter);
+            } else throw new NullFieldException("start date");
+            return result;
         };
         return readAndCheckField("start date", "", tempInterface);
     }
@@ -90,7 +108,7 @@ public class FieldCheckerForConsole {
     public ZonedDateTime readAndCheckEndDate() {
         FieldCheckerHelp<ZonedDateTime> tempInterface = str -> {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.uuuu H:mm:ss z");
-            if (str == null) {
+            if (str == null || str.equals("")) {
                 return null;
             } else {
                 return ZonedDateTime.parse(str, formatter);
@@ -104,7 +122,7 @@ public class FieldCheckerForConsole {
             System.out.println(pos.toString());
         }
         FieldCheckerHelp<Position> tempInterface = str -> {
-            if (str == null) {
+            if (str == null || str.equals("")) {
                 return null;
             } else {
                 return Position.valueOf(str.toUpperCase());
@@ -113,22 +131,28 @@ public class FieldCheckerForConsole {
         return readAndCheckField("position", "", tempInterface);
     }
 
-    public Long readAndCheckHeight() throws NumberFormatException {
+    public Long readAndCheckHeight(){
         FieldCheckerHelp<Long> tempInterface = str -> {
-            long result = Long.parseLong(str);
-            if (result <= 0) {
-                throw new NumberFormatException();
+            Long result = null;
+            if (str != null) {
+                result = Long.parseLong(str);
+                if (result <= 0) {
+                    throw new IncorrectValueException("height", "(Reminder: Height should be more than 0.)");
+                }
             }
             return result;
         };
         return readAndCheckField("height", "(Reminder: Height should be more than 0.)", tempInterface);
     }
 
-    public Integer readAndCheckWeight() throws NumberFormatException {
+    public Integer readAndCheckWeight(){
         FieldCheckerHelp<Integer> tempInterface = str -> {
-            int result = Integer.parseInt(str);
-            if (result <= 0) {
-                throw new NumberFormatException();
+            Integer result = null;
+            if (str != null) {
+                result = Integer.parseInt(str);
+                if (result <= 0) {
+                    throw new IncorrectValueException("weight", "(Reminder: Weight should be more than 0.)");
+                }
             }
             return result;
         };
